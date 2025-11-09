@@ -1,4 +1,5 @@
 #include "MainComponent.h"
+#include "../Parsers/ZamplerDemuxer.h"
 
 MainComponent::MainComponent()
     : progressBar(progress)
