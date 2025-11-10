@@ -9,12 +9,12 @@ struct PluginProfile
 {
     // Core identity
     juce::String pluginName;     ///< Primary plugin name (human-readable)
-    juce::String pluginId;       ///< Unique ID (VST2 4CC, or other)
+    juce::String pluginId;       ///< Unique ID (VST2 4CC, GUID, etc)
     juce::String manufacturer;
     juce::String version;
 
     // Format flags
-    bool isChunkBased = false;   ///< True for binary/chunk presets
+    bool isChunkBased = false;   ///< True for binary-chunk presets
     bool isVst2       = false;
     bool isVst3       = false;
 
@@ -23,13 +23,13 @@ struct PluginProfile
     juce::String profileAuthor    = "PresetConverter";
     juce::String notes;
 
-    // NEW: Alternate names to match by (case-insensitive)
+    // ✅ NEW
     juce::StringArray aliases;
 
     // Optional: listed samples (for samplers)
     juce::StringArray requiredSamples;
 
-    // Optional/future: parameter mappings (opaque to the factory)
+    // Optional / future: parameter mappings
     juce::Array<juce::var> parameterMappings;
 
     PluginProfile() = default;
