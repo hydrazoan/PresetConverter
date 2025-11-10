@@ -1,42 +1,41 @@
 #pragma once
 #include <JuceHeader.h>
 
+/**
+ * @struct PluginProfile
+ * @brief Describes a plugin and how its presets should be interpreted.
+ */
 struct PluginProfile
 {
-    juce::String pluginName;
-    juce::String pluginId;       // VST2 4CC, etc.
+    // Core identity
+    juce::String pluginName;     ///< Primary plugin name (human-readable)
+    juce::String pluginId;       ///< Unique ID (VST2 4CC, or other)
     juce::String manufacturer;
     juce::String version;
-    bool         isChunkBased = true;
-    bool         isVst2      = true;
 
-    juce::String defaultLayerType = "Sampler";
+    // Format flags
+    bool isChunkBased = false;   ///< True for binary/chunk presets
+    bool isVst2       = false;
+    bool isVst3       = false;
+
+    // Usability
+    juce::String defaultLayerType = "Synth";
     juce::String profileAuthor    = "PresetConverter";
-    juce::Time   creationDate     = juce::Time::getCurrentTime();
     juce::String notes;
 
-    bool isValid() const { return pluginId.isNotEmpty() && pluginName.isNotEmpty(); }
+    // NEW: Alternate names to match by (case-insensitive)
+    juce::StringArray aliases;
 
-    bool loadFromFile(const juce::File& f)
+    // Optional: listed samples (for samplers)
+    juce::StringArray requiredSamples;
+
+    // Optional/future: parameter mappings (opaque to the factory)
+    juce::Array<juce::var> parameterMappings;
+
+    PluginProfile() = default;
+
+    bool isValid() const noexcept
     {
-        if (!f.existsAsFile()) return false;
-        juce::var v = juce::JSON::parse(f);
-        if (!v.isObject()) return false;
-
-        auto* o = v.getDynamicObject(); if (!o) return false;
-
-        pluginName       = o->getProperty("pluginName").toString();
-        pluginId         = o->getProperty("pluginId").toString();
-        manufacturer     = o->getProperty("manufacturer").toString();
-        version          = o->getProperty("version").toString();
-        isChunkBased     = (bool) o->getProperty("isChunkBased");
-        isVst2           = (bool) o->getProperty("isVst2");
-        defaultLayerType = o->getProperty("defaultLayerType").toString();
-        profileAuthor    = o->getProperty("profileAuthor").toString();
-        notes            = o->getProperty("notes").toString();
-
-        return isValid();
+        return pluginName.isNotEmpty() || pluginId.isNotEmpty();
     }
-
-    JUCE_LEAK_DETECTOR(PluginProfile)
 };
